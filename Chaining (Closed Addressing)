@@ -1,0 +1,134 @@
+#include<iostream>
+using namespace std;
+class HashNode
+{
+public:
+	int key = 0;
+	int value = 0;
+	HashNode* next = nullptr;
+	HashNode() {}
+	HashNode(int k,int v)
+	{
+		this->key = k;
+		this->value = v;
+		this->next = nullptr;
+	}
+	~HashNode() {}
+private:
+};
+class HashTable
+{
+public:
+	void insert(int key,int value)
+	{
+		int index = HashFunction(key);
+		HashNode* newnode = new HashNode(key,value);
+		newnode->next = table[index];
+		table[index] = newnode;
+	}
+	bool get(int key,int&value) 
+	{
+		int index = HashFunction(key);
+		HashNode* current = table[index];
+		while (current!=nullptr)
+		{
+			if(current->key==key)
+			{
+				value = current->value;
+				return true;
+			}
+			current = current->next;
+		}
+		return false;
+	}
+	void remove(int key)
+	{
+		int index = HashFunction(key);
+		HashNode* current = table[index];
+		HashNode* prev = nullptr;
+		while (current!=nullptr)
+		{
+			if (current->key==key)
+			{
+				if(prev==nullptr)
+				{
+					table[index] = current->next;
+				}
+				else
+				{
+					prev->next = current->next;
+				}
+				delete current;
+				return;
+			}
+			prev = current;
+			current = current->next;
+		}
+	}
+	void showtable()
+	{
+		for (int i = 0; i < tablesize; i++)
+		{
+			HashNode* current = table[i];
+			cout << "Bucket " << i << ": ";
+			while (current != nullptr)
+			{
+				cout << "{" << current->key << ": " << current->value << "}";
+				current = current->next;
+			}cout << "\n";
+		}
+	}
+	HashTable(){}
+	HashTable(int size) 
+	{
+		this->tablesize = size;
+		this->table = new HashNode*[size];
+		for (int i = 0; i < size; i++)
+		{
+			this->table[i] = nullptr;
+		}
+	}
+	~HashTable() 
+	{
+		for (int i = 0; i < tablesize; i++)
+		{
+			HashNode* current = table[i];
+			while (current != nullptr)
+			{
+				HashNode* temp = current;
+				current = current->next;
+				delete temp;
+			}
+		}
+		delete[] table;
+	}
+private:
+	int tablesize = 0;
+	HashNode** table = NULL;
+	int HashFunction(int key)
+	{
+		return key % tablesize;
+	}
+};
+int main()
+{
+	HashTable hashTable(10);
+	hashTable.insert(4,220);
+	hashTable.insert(88, 220);
+	hashTable.insert(44, 220);
+	hashTable.insert(5, 50);
+	hashTable.insert(15, 150);
+	hashTable.insert(25, 250);
+/*
+	int value;
+	if (hashTable.get(5, value))
+		std::cout << "Key 5, Value: " << value << std::endl; // Output: 50
+
+	hashTable.remove(15);
+
+	if (!hashTable.get(15, value))
+		std::cout << "Key 15 not found." << std::endl; // Output: Key 15 not found.*/
+	hashTable.showtable();
+
+	return 0;
+}
