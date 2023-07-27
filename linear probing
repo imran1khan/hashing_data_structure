@@ -1,0 +1,94 @@
+#include<iostream>
+using namespace std;
+class HashTable
+{
+public:
+	void displayashTable()
+	{
+		for (int i = 0; i < tablesize; i++)
+		{
+			if (Table[i].key!=0 && !Table[i].deleted)
+			{
+				cout << "Bucket no : " << i << "{" << Table[i].key << ": " << Table[i].value;
+			}
+			else if(Table[i].key == 0)
+			{
+				cout << "Bucket no : " << i << "{" << Table[i].key << ": " << Table[i].value;
+			}
+		}
+	}
+	void remove(int key)
+	{
+		int index = HashFunction(key);
+		int count = 0;
+		while (count<tablesize && Table[index].key!=0)
+		{
+			if (Table[index].key==key && !Table[index].deleted)
+			{
+				Table[index].deleted = true;
+				return;
+			}
+			index = (index + 1) % tablesize;
+			count++;
+		}
+	}
+	void insert(int key,int value)
+	{
+		int index = HashFunction(key);
+		int count = 0;
+		while (count<tablesize && Table[index].key!=0 && Table[index].key!=key)
+		{
+			index = (index + 1) % tablesize;
+			count++;
+		}
+		if (Table[index].key==0 || Table[index].key==key)
+		{
+			// found an empty slot or a slot withe the same key
+			Table[index].key = key;
+			Table[index].value = value;
+			Table[index].deleted = false;
+		}
+		else
+		{
+			cout << "hashtable is full unable to insert key = " << key << endl;
+		}
+	}
+	bool get(int key, int& value)
+	{
+		int index = HashFunction(key);
+		int count = 0;
+		while (count<tablesize && Table[index].key!=0)
+		{
+			if (Table[index].key==key && !Table[index].deleted)
+			{
+				value = Table[index].value;
+				return true;
+			}
+			index = (index + 1) % tablesize;
+			count++;
+		}
+		return false;
+	}
+	HashTable(){}
+	HashTable(int size) 
+	{
+		this->tablesize = size;
+		this->Table = new Node[size];
+	}
+	~HashTable() 
+	{
+		delete[] Table;
+	}
+
+private:
+	struct Node
+	{
+		int key = 0;
+		int value = 0;
+		bool deleted = false;
+	};
+	int tablesize = 0;
+	Node* Table = NULL;
+	int HashFunction(int key){}
+};
+int main(){}
